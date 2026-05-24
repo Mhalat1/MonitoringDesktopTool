@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Monitor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #0a0e1a; color: #e2e8f0; padding: 2rem; }
+    h1 { color: #60a5fa; font-size: 20px; margin-bottom: 1.5rem; }
+    .stats { display: flex; gap: 12px; margin-bottom: 1.5rem; }
+    .stat { background: #111827; border: 1px solid #1f2937; border-radius: 8px; padding: 12px 18px; }
+    .stat .val { font-size: 24px; font-weight: 600; color: #60a5fa; }
+    .stat .lab { font-size: 11px; color: #6b7280; }
+    .controls { display: flex; gap: 8px; margin-bottom: 1rem; }
+    input { flex: 1; background: #111827; border: 1px solid #1f2937; border-radius: 6px; padding: 8px 12px; color: #e2e8f0; font-size: 13px; }
+    button { background: #2563eb; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; font-size: 13px; }
+    button:hover { background: #1d4ed8; }
+    #status { font-size: 12px; color: #6b7280; margin-bottom: 1rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 8px 12px; color: #6b7280; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #1f2937; }
+    td { padding: 8px 12px; border-bottom: 1px solid #111827; }
+    tr:hover td { background: #111827; }
+    .badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; }
+    .f { background: #1e3a5f; color: #60a5fa; border: 1px solid #2563eb; }
+    .d { background: #1a3a2a; color: #34d399; border: 1px solid #059669; }
+  </style>
+</head>
+<body>
+  <h1>⬡ Airbus Monitor</h1>
+
+  <div class="stats">
+    <div class="stat"><div class="val" id="total">—</div><div class="lab">Total</div></div>
+    <div class="stat"><div class="val" id="nb-f">—</div><div class="lab">Fichiers</div></div>
+    <div class="stat"><div class="val" id="nb-d">—</div><div class="lab">Dossiers</div></div>
+    <div class="stat"><div class="val" id="taille">—</div><div class="lab">Mo total</div></div>
+  </div>
+
+  <div class="controls">
+    <input id="chemin" value="C:/Users/user/Desktop">
+    <button onclick="charger()">Scanner</button>
+  </div>
+
+  <div id="status">Cliquez sur Scanner</div>
+
+  <table>
+    <thead><tr><th>Nom</th><th>Type</th><th>Taille</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+<script>
+  async function charger() {
+    const chemin = document.getElementById('chemin').value;
+    document.getElementById('status').textContent = 'Scan en cours...';
+    const res = await fetch('/api/analyse?dossier=' + encodeURIComponent(chemin));
+    const data = await res.json();
+    if (data.statut !== 'OK') { document.getElementById('status').textContent = 'Erreur : ' + data.message; return; }
+    document.getElementById('total').textContent = data.fichiers.length;
+    document.getElementById('nb-f').textContent = data.stats.fichier || 0;
+    document.getElementById('nb-d').textContent = data.stats.dossier || 0;
+    document.getElementById('taille').textContent = (data.fichiers.reduce((a, f) => a + f.taille_ko, 0) / 1024).toFixed(1);
+    document.getElementById('status').textContent = data.fichiers.length + ' éléments trouvés';
+    document.getElementById('tbody').innerHTML = data.fichiers.map(f =>
+      `<tr><td>${f.nom}</td><td><span class="badge ${f.type === 'dossier' ? 'd' : 'f'}">${f.type}</span></td><td>${f.taille_ko} Ko</td></tr>`
+    ).join('');
+  }
+  charger();
+</script>
+</body>
+</html>
