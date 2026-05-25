@@ -1,0 +1,24 @@
+# CHAPITRE 4 — ConfigMap : configuration non sensible
+#
+# Dans ton MonitorController.java, tu as des valeurs codées en dur :
+#   @RequestParam(defaultValue = "C:/Users/user/Desktop") String dossier
+#
+# Avec K8s, on externalise ça ici — sans toucher au code Java.
+# Spring Boot lit automatiquement les variables d'env injectées par K8s.
+#
+# kubectl apply -f 2-configmap.yml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: monitor-config
+  namespace: airbus-monitor
+data:
+  # Remplace le defaultValue codé en dur dans MonitorController
+  SCAN_PATH: "/opt/data"
+
+  # Port du serveur Spring Boot (MonitorApplication lance Tomcat sur 8080)
+  SERVER_PORT: "8080"
+
+  # Niveau de log (visible dans kubectl logs)
+  LOG_LEVEL: "INFO"

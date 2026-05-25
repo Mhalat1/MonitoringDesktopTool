@@ -1,0 +1,34 @@
+# CHAPITRE 5 — Ingress : exposer Monitor sur internet
+#
+# Routes HTTP directement calquées sur tes @GetMapping dans MonitorController.java :
+#   /api/fichiers → @GetMapping("/fichiers")
+#   /api/analyse  → @GetMapping("/analyse")
+#
+# Tous les appels vers monitor.airbus.com/api/* sont routés vers monitor-service,
+# qui load-balance entre tes 3 Pods.
+#
+# kubectl apply -f 7-ingress.yml
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: monitor-ingress
+  namespace: airbus-monitor
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: monitor.airbus.com
+      http:
+        paths:
+          # Route toutes les requêtes /api vers monitor-service
+          # Couvre tes deux endpoints :
+          #   GET /api/fichiers  (MonitorController.listerFichiers)
+          #   GET /api/analyse   (MonitorController.analyser)
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: monitor-service
+                port:
+                  number: 80

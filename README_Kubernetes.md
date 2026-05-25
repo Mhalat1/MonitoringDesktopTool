@@ -1,6 +1,18 @@
 # Déployer Monitor sur Kubernetes — commandes essentielles
 # (Chapitre 6 du cours appliqué à ton projet)
 
+# dans terminale powershell 
+
+# etape 1 demmarrer service docker 
+
+# PS C:\Windows\system32> net stop com.docker.service
+# PS C:\Windows\system32> net start com.docker.service
+
+# etape 2 demmarrer service minikube
+# PS C:\Windows\system32> c:\minikube\minikube.exe start
+
+# dans terminale git bash 
+
 ## 1. Déployer tout d'un coup
 kubectl apply -f k8s/
 
