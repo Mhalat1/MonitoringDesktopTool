@@ -69,6 +69,8 @@ class FichierLog extends Fichier {
     @Override
     public String analyser() {
         return "[" + niveau + "] " + super.analyser();
+        // resultat : "[INFO] Fichier: app.log | Taille: 5 Ko | Type: log"
+
     }
 }
 
@@ -118,9 +120,7 @@ class Moniteur {
 
             fichiers.add(fichier);
 
-            // getOrDefault = retourne la valeur ou 0 si la clé n'existe pas encore
-            String type = fichier.getType();
-            stats.put(type, stats.getOrDefault(type, 0) + 1);
+
         }
     }
 

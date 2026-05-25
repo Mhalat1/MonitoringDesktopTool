@@ -1,0 +1,10 @@
+# CHAPITRE 2 — Architecture : isolation logique avec les Namespaces
+# Crée un espace isolé pour toute l'application Monitor
+# kubectl apply -f 1-namespace.yml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: airbus-monitor
+  labels:
+    app: monitor

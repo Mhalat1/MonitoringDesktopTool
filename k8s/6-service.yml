@@ -1,0 +1,26 @@
+# CHAPITRE 3 — Service : IP stable + load balancing
+#
+# Les 3 Pods Monitor ont des IP éphémères qui changent à chaque redémarrage.
+# Ce Service fournit une IP stable et distribue le trafic entre les 3 Pods.
+#
+# Lien avec ton code :
+#   - Le Service route le port 80 externe vers le port 8080 de tes Pods
+#     (le port où Tomcat écoute dans MonitorApplication)
+#   - selector: app: monitor = cible les Pods créés par le Deployment
+#
+# kubectl apply -f 6-service.yml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: monitor-service
+  namespace: airbus-monitor
+spec:
+  selector:
+    app: monitor      # cible tous les Pods avec label app=monitor
+  ports:
+    - protocol: TCP
+      port: 80          # port du Service (ce que l'Ingress appellera)
+      targetPort: 8080  # port de ton conteneur Spring Boot
+  type: ClusterIP       # accessible uniquement dans le cluster
+                        # l'Ingress s'occupe de l'exposition externe
