@@ -1,0 +1,15 @@
+---
+# Playbook = fichier qui décrit ce qu'Ansible doit faire
+- name: Déployer Airbus Monitor
+  hosts: localhost      # machine cible = cette machine (WSL)
+  connection: local     # pas de SSH, Ansible s'exécute directement
+
+  vars:
+    app_port: 8080      # port de Spring Boot — réutilisable avec {{ app_port }}
+
+  tasks:
+    # Tâche : appelle l'API et vérifie qu'elle répond 200
+    - name: Tester l'API Monitor
+      uri:                    # module uri = faire une requête HTTP
+        url: "http://172.19.0.1:{{ app_port }}/api/fichiers"
+        status_code: 200      # échoue si la réponse n'est pas 200
